@@ -1,9 +1,8 @@
 // Node Package Dependencis
-var http = require("http");
-var fs = require("fs");
 var inquirer = require("inquirer");
 var Table = require("cli-table");
 var mysql = require("mysql");
+var colors = require("colors");
 
 // Creates MySQL Connection
 var connection = mysql.createConnection(
@@ -35,7 +34,7 @@ function listProducts()
 
         var productsTable = new Table(
             {
-                head: ["Product ID", "Product Name", "Department", "Price", "Avail Qty"],
+                head: ["Product ID".america, "Product Name".america, "Department".america, "Price".america, "Avail Qty".america],
                 colWidths: [15, 50, 50, 15, 15]
             });
 
@@ -115,7 +114,23 @@ connection.connect(function(err)
     
     console.log("\nYou are connected as: User" + connection.threadId + "\n");
 
-    console.log("Welcome to Bamazon! Please take a look at all we have to sell. Happy shopping!");
+    console.log("Welcome to " + colors.america("Bamazon!") + " Please take a look at all we have to sell. Happy shopping, 'Murica!\n");
+
+    console.log("                                 o");
+    console.log("                                /\\ ");
+    console.log("                               /::\\ ");
+    console.log("                              /::::\\ ");
+    console.log("               ,a_a          /\\::::/\\ ");
+    console.log("               {/ ''\\_      /\\ \\::/\\ \\ ");
+    console.log("               {\\ ,_oo)    /\\ \\ \\\/\\ \\ \\ ");
+    console.log("               {/  (_^____/  \\ \\ \\ \\ \\ \\ ");
+    console.log("     .=.      {/ \\___)))*)    \\ \\ \\ \\ \\\/ ");
+    console.log("   (.=.`\\   {/    /=;  ~/      \\ \\ \\ \\\/ ");
+    console.log("       \\ `\\{/(    \\/\\  /        \\ \\ \\\/ ");
+    console.log("         \\  `. `\\  ) )           \\ \\\/ ");
+    console.log("          \\    // /_/_            \\\/ ");
+    console.log("           '==''---))))");
+    console.log("     Bam Bam: Offical Mascot of Bamazon\n")
 
     listProducts();
 });
