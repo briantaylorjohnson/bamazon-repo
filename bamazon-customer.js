@@ -7,6 +7,9 @@ var colors = require("colors");
 // Creates MySQL Connection
 var connection = mysql.createConnection(
 {
+    // Connection Limit
+    connectionLimit: 100,
+    
     // Host
     host: "localhost",
 
@@ -34,7 +37,7 @@ function listProducts()
 
         var productsTable = new Table(
             {
-                head: ["Product ID".america, "Product Name".america, "Department".america, "Price".america, "Avail Qty".america],
+                head: ["Product ID".red, "Product Name".blue, "Department".white, "Price".red, "Avail Qty".blue],
                 colWidths: [15, 50, 50, 15, 15]
             });
 
@@ -96,6 +99,7 @@ function pickTask()
 
             // Quits Bamazon
             case "Quit Bamazon":
+                console.log("\nThank you for shopping at " + colors.america("Bamazon") + "! Have a nice day and come again!\n")
                 process.exit();
                 break;
         }
@@ -104,8 +108,148 @@ function pickTask()
 
 function buyProduct()
 {
-    console.log("\nLet's buy something!\n")
-    pickTask();
+    var purchaeId;
+    var purchaseQty;
+
+    console.log("\n");
+
+    inquirer.prompt(
+    [
+        {
+            name: "productId",
+            message: "What is the Product ID of the item you want to purchase?",
+            validate: function(value)
+            {
+                var onlyNum = new RegExp('^[0-9]+$');
+
+                if (value == "")
+                {
+                    return false;
+                }
+
+                else if (onlyNum.test(value) == true)
+                {
+                    return true;
+                }
+
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+    ]).then(function(response)
+    {
+        purchaseId = response.productId;
+        
+        console.log("\n");
+
+        inquirer.prompt(
+        [
+            {
+                name: "productQty",
+                message: "How many would you like to buy?",
+                validate: function(value)
+                {
+                    var onlyNum = new RegExp('^[0-9]+$');
+
+                    if (value == "")
+                    {
+                        return false;
+                    }
+
+                    else if (onlyNum.test(value) == true)
+                    {
+                        return true;
+                    }
+
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+        ]).then(function(response)
+        {
+            purchaseQty = response.productQty;
+
+            console.log("\nLet's buy something!\n")
+
+            checkSupply(purchaseId, purchaseQty);
+        });
+    });
+}
+
+function checkSupply(id, qty)
+{
+    var purchaseId = id;
+    var purchaseQty = qty;
+    var purchasePrice;
+
+    console.log("\nChecking to see if the product is in stock...\n");
+
+    connection.query("SELECT item_id FROM bamazon.products;", function(err, res)
+    {
+        if (err) throw err;
+        
+        var productIdArray = [];
+
+        for (i = 0; i < res.length; i++)
+        {
+            productIdArray.push(res[i].item_id);
+        }
+
+        if (productIdArray.includes(parseInt(id)) == true)
+        {
+            connection.query("SELECT * FROM bamazon.products WHERE item_id = " + purchaseId + ";", function(err, res)
+            {
+        
+                if (res[0].stock_qty >= purchaseQty)
+                {
+                    purchasePrice = res[0].price;
+                    
+                    console.log(colors.green("We have your product in stock. Fulfilling order...\n"));
+
+                    fillOrder(id, qty, res[0].stock_qty, purchasePrice);
+                }
+
+                else if (res[0].stock_qty < purchaseQty)
+                {
+                    console.log(colors.red("We do not have your product in stock. Please try again later.\n"));
+
+                    pickTask();
+                }
+            });
+        }
+
+        else
+        {
+            console.log(colors.red("You entered an invalid Product ID. Please try again.\n"));
+        
+            pickTask();
+        }
+    });
+
+}
+
+function fillOrder(id, purchaseQty, availQty, price)
+{
+    availQty -= purchaseQty;
+
+    var total = price * purchaseQty;
+
+    var query = "UPDATE bamazon.products SET stock_qty = " + availQty + " WHERE item_id = " + id + ";";
+    
+    connection.query(query, function(err, res)
+    {
+        if (err) throw err;
+
+        console.log("\nYour order has been fulfilled!\n")
+        console.log("Total Cost: $" + total + "\n");
+
+        pickTask();
+    });
 }
 
 connection.connect(function(err)
@@ -130,7 +274,7 @@ connection.connect(function(err)
     console.log("         \\  `. `\\  ) )           \\ \\\/ ");
     console.log("          \\    // /_/_            \\\/ ");
     console.log("           '==''---))))");
-    console.log("     Bam Bam: Offical Mascot of Bamazon\n")
+    console.log("     Bam Bam: Offical Mascot of " + colors.america("Bamazon")+ "\n");
 
     listProducts();
 });
