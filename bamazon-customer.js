@@ -245,8 +245,8 @@ function fillOrder(id, purchaseQty, availQty, price)
     {
         if (err) throw err;
 
-        console.log("\nYour order has been fulfilled!\n")
-        console.log("Total Cost: $" + total + "\n");
+        console.log("Your order has been fulfilled!\n")
+        console.log(colors.green("Total Cost: $" + total + "\n"));
 
         pickTask();
     });
