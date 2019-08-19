@@ -256,7 +256,9 @@ connection.connect(function(err)
 {
     if (err) throw err;
     
-    console.log("\nYou are connected as: User" + connection.threadId + "\n");
+    console.log(colors.green("\n\n<----- Customer Mode ----->"));
+
+    console.log("\nYou are connected as: Customer " + connection.threadId + "\n");
 
     console.log("Welcome to " + colors.america("Bamazon!") + " Please take a look at all we have to sell. Happy shopping, 'Murica!\n");
 
