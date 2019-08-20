@@ -96,7 +96,7 @@ function pickTask()
         // Sets the local task variable to the task chosen by the customer
         task = response.task;
 
-        // Switch that invokes the function associated with the task the user wishes to perform
+        // Switch that invokes the function associated with the task the customer wishes to perform
         switch(task)
         {
             // Invokes the buyProduct function
@@ -235,6 +235,8 @@ function checkSupply(id, qty)
             // MySQL query which is run to retrieve quantity in stock and price of the product the customer wishes to purchase
             connection.query("SELECT * FROM bamazon.products WHERE item_id = " + purchaseId + ";", function(err, res)
             {
+                // If an error is encountered, then the error is displayed to the customer
+                if (err) throw err;
                 
                 // Conditional statement which checks to see if there are enough products in stock for the customer's purchase
                 if (res[0].stock_qty >= purchaseQty)
@@ -291,6 +293,7 @@ function fillOrder(id, purchaseQty, availQty, price)
     // Runs the MySQL query statement which will update the in stock quantity for the product purchased
     connection.query(query, function(err, res)
     {
+        // If an error is encountered, then the error is displayed to the customer
         if (err) throw err;
 
         // Notifies the customer that the order has been fulfilled along with the total purchase cost
@@ -305,6 +308,7 @@ function fillOrder(id, purchaseQty, availQty, price)
 // Performs the initial connection to the Bamazon database and displays welcome messaging to the customer
 connection.connect(function(err)
 {
+    // If an error is encountered, then the error is displayed to the customer
     if (err) throw err;
     
     console.log(colors.green("\n\n<----- Customer Mode ----->"));
@@ -329,7 +333,7 @@ connection.connect(function(err)
     console.log("           '==''---))))");
     console.log("     Bam Bam: Offical Mascot of " + colors.america("Bamazon")+ "\n");
     
-    // Ascii art credit to JGS from asciiart.website
+    // ASCII art credit to JGS from asciiart.website
 
     // Invokes the pickTask() function so the customer can choose the task he wishes to do next
     listProducts();
